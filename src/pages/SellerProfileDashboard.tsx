@@ -11,10 +11,11 @@ const COLORS = {
 };
 
 // Sample Seller Data
-const initialSellers: SellerProfile[] = [
+export const initialSellers: SellerProfile[] = [
   {
     id: "s1",
     businessName: "Innovate Solutions Inc.",
+    logo: "https://placehold.co/60x60/9F7AEA/FFFFFF?text=AIG",
     industry: "Software as a Service (SaaS)",
     annualRevenue: "$5M - $20M",
     employees: 45,
@@ -34,6 +35,7 @@ const initialSellers: SellerProfile[] = [
   {
     id: "s2",
     businessName: "The E-commerce Hub",
+    logo: "https://placehold.co/60x60/9F7AEA/FFFFFF?text=AIG",
     industry: "E-commerce",
     annualRevenue: "$1M - $5M",
     employees: 10,
@@ -53,6 +55,7 @@ const initialSellers: SellerProfile[] = [
   {
     id: "s3",
     businessName: "Digital Marketing Pros",
+    logo: "https://placehold.co/60x60/9F7AEA/FFFFFF?text=AIG",
     industry: "Digital Marketing Agency",
     annualRevenue: "Less than $1M",
     employees: 5,

@@ -28,24 +28,29 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedItem, setSelectedItem }) => {
 
   const baseNavItems = [
     { name: "Dashboard", path: "/dashboard", icon: <House /> },
-    { name: "Matches", path: "/matches", icon: <HandHeart /> },
     { name: "Deals", path: "/deals", icon: <Handshake /> },
     { name: "Messages", path: "/messages", icon: <MessageSquare /> },
     { name: "AI Insights", path: "/insights", icon: <Brain /> },
-    // { name: "Profile", path: "/profile", icon: <UserRoundPen /> },
   ];
 
-  // Conditionally add the role-specific profile item
-  const roleSpecificProfile =
-    role === "buyer"
-      ? { name: "Seller Profile", path: "/seller-profile", icon: <UserRound /> }
-      : { name: "Buyer Profile", path: "/buyer-profile", icon: <UserRound /> };
+  const buyerSpecificItems = [
+    { name: "Seller Profile", path: "/seller-profile", icon: <UserRound /> },
+    { name: "Matches", path: "/matches-seller", icon: <HandHeart /> },
+  ];
+
+  const sellerSpecificItems = [
+    { name: "Buyer Profile", path: "/buyer-profile", icon: <UserRound /> },
+    { name: "Matches", path: "/matches-buyer", icon: <HandHeart /> },
+  ];
+
+  // Conditionally select the role-specific items
+  const roleSpecificItems = role === "buyer" ? buyerSpecificItems : sellerSpecificItems;
 
   // Combine all navigation items
   const navItems = role
     ? [
         ...baseNavItems,
-        roleSpecificProfile,
+        ...roleSpecificItems,
         { name: "Settings", path: "/settings", icon: <Settings /> },
       ]
     : baseNavItems;

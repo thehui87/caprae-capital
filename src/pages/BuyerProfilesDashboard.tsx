@@ -11,10 +11,11 @@ const COLORS = {
 };
 
 // Sample Buyer Data
-const initialBuyers: BuyerProfile[] = [
+export const initialBuyers: BuyerProfile[] = [
   {
     id: "b1",
     companyName: "Global Acquisitions Inc.",
+    logo: "https://placehold.co/60x60/9F7AEA/FFFFFF?text=AIG",
     acquisitionBudget: "$20M - $50M",
     revenueTarget: "$5M - $20M",
     industry: "Software & Technology",
@@ -34,6 +35,7 @@ const initialBuyers: BuyerProfile[] = [
   {
     id: "b2",
     companyName: "Innovate Venture Partners",
+    logo: "https://placehold.co/60x60/9F7AEA/FFFFFF?text=AIG",
     acquisitionBudget: "$1M - $5M",
     revenueTarget: "Less than $1M",
     industry: "E-commerce & Digital Marketing",
@@ -50,6 +52,7 @@ const initialBuyers: BuyerProfile[] = [
   {
     id: "b3",
     companyName: "Strategic Holdings Group",
+    logo: "https://placehold.co/60x60/9F7AEA/FFFFFF?text=AIG",
     acquisitionBudget: "$50M+",
     revenueTarget: "$20M+",
     industry: "Healthcare & Biotech",

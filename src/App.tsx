@@ -3,7 +3,9 @@ import { Suspense, lazy, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import { useSelector } from "react-redux";
 import type { RootState } from "./redux/store";
-import { buyerProfiles } from "./constants/interfaceItems";
+import { initialBuyers } from "./pages/BuyerProfilesDashboard";
+import { initialSellers } from "./pages/SellerProfileDashboard";
+
 import { NavbarProvider } from "./context/navbarContext";
 // Lazy imports
 const Home = lazy(() => import("./pages/Home"));
@@ -15,13 +17,17 @@ const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
 const Register = lazy(() => import("./pages/Register"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const LoggedInLayout = lazy(() => import("./layouts/LoggedinLayout"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
+// const Dashboard = lazy(() => import("./pages/Dashboard"));
+const DashboardBuyer = lazy(() => import("./pages/DashboardBuyer"));
+const DashboardSeller = lazy(() => import("./pages/DashboardSeller"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Deals = lazy(() => import("./pages/Deals"));
 const DealRoom = lazy(() => import("./pages/DealRoom"));
 const Messages = lazy(() => import("./pages/Messages"));
-const Matches = lazy(() => import("./pages/Matches"));
+// const Matches = lazy(() => import("./pages/Matches"));
+const MatchesBuyer = lazy(() => import("./pages/MatchesBuyer"));
+const MatchesSeller = lazy(() => import("./pages/MatchesSeller"));
 const Insights = lazy(() => import("./pages/Insights"));
 const BuyerProfilesDashboard = lazy(() => import("./pages/BuyerProfilesDashboard"));
 const SellerProfileDashboard = lazy(() => import("./pages/SellerProfileDashboard"));
@@ -38,7 +44,7 @@ function Loader() {
 
 export default function App() {
   const isLoggedIn = useSelector((state: RootState) => state.auth.loggedIn);
-  const { onboardingType, matchedBuyer } = useSelector((state: RootState) => state.buyer);
+  // const { onboardingType, matchedBuyer } = useSelector((state: RootState) => state.buyer);
 
   const [role, setRole] = useState<string | null>(null);
   const [onboarded, setOnboarded] = useState(false);
@@ -124,29 +130,71 @@ export default function App() {
                     />
                   }
                 />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <Dashboard
-                      role={role || ""}
-                      onboarded={onboarded}
-                      buyerProfiles={buyerProfiles}
-                      onAccept={() => {}}
-                      onReject={() => {}}
-                      onViewProfile={() => {}}
-                      onboardingType={onboardingType}
-                    />
-                  }
-                />
+                {role == "buyer" ? (
+                  // <Route
+                  //   path="/dashboard"
+                  //   element={
+                  //     <Dashboard
+                  //       role={role || ""}
+                  //       onboarded={onboarded}
+                  //       buyerProfiles={initialBuyers}
+                  //       sellerProfiles={initialSellers}
+                  //       onAccept={() => {}}
+                  //       onReject={() => {}}
+                  //       onViewProfile={() => {}}
+                  //       onboardingType={onboardingType}
+                  //     />
+                  //   }
+                  // />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <DashboardBuyer
+                        onAccept={() => {}}
+                        onReject={() => {}}
+                        onViewProfile={() => {}}
+                        showProfileModal={false}
+                        selectedSeller={initialSellers[0]} // Changed from selectedSeller
+                        setShowProfileModal={() => {}}
+                        matchedSeller={initialSellers[0]} // Changed from matchedSeller
+                        goToDealRoom={() => {}}
+                      />
+                    }
+                  />
+                ) : (
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <DashboardSeller
+                        onAccept={() => {}}
+                        onReject={() => {}}
+                        onViewProfile={() => {}}
+                        showProfileModal={false}
+                        selectedBuyer={initialBuyers[0]} // Changed from selectedSeller
+                        setShowProfileModal={() => {}}
+                        matchedBuyer={initialBuyers[0]} // Changed from matchedSeller
+                        goToDealRoom={() => {}}
+                      />
+                    }
+                  />
+                )}
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/deals" element={<Deals />} />
                 <Route
                   path="/deal-room"
-                  element={<DealRoom buyer={matchedBuyer} onBackToDashboard={goToDashboard} />}
+                  element={
+                    <DealRoom
+                      matchedProfile={initialBuyers[0]}
+                      role={role}
+                      onBackToDashboard={goToDashboard}
+                    />
+                  }
                 />
                 <Route path="/messages" element={<Messages />} />
-                <Route path="/matches" element={<Matches />} />
+                {/* <Route path="/matches" element={<Matches />} /> */}
+                <Route path="/matches-buyer" element={<MatchesSeller />} />
+                <Route path="/matches-seller" element={<MatchesBuyer />} />
                 <Route path="/insights" element={<Insights />} />
                 <Route path="/buyer-profile" element={<BuyerProfilesDashboard />} />
                 <Route path="/seller-profile" element={<SellerProfileDashboard />} />

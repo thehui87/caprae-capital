@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react";
-import type { BuyerProfile } from "../constants/interfaceItems";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import type { BuyerProfile } from "../components/BuyerProfileCard";
+import type { SellerProfile } from "../components/SellerProfileCard";
 
-// Define DealRoom Props Interface
+// Define the component's props to accept either a buyer or a seller profile
 interface DealRoomProps {
-  buyer: BuyerProfile | null;
+  // Use a type union to ensure one of these is provided
+  matchedProfile: BuyerProfile | SellerProfile;
+  role: string | null;
   onBackToDashboard: () => void;
 }
 
@@ -16,12 +20,30 @@ interface Step {
 }
 
 // Deal Room Component
-const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
+const DealRoom: React.FC<DealRoomProps> = ({ matchedProfile, role, onBackToDashboard }) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [financialDoc, setFinancialDoc] = useState<File | null>(null);
   const [summary, setSummary] = useState<string>("");
   const [loadingAI, setLoadingAI] = useState<boolean>(false);
   const [dealStage, setDealStage] = useState<string>("Introduction"); // Current deal stage
+
+  // Use a type guard to determine which profile type we have
+  const isBuyerProfile = (profile: BuyerProfile | SellerProfile): profile is BuyerProfile =>
+    (profile as BuyerProfile).companyName !== undefined;
+
+  const isMatchedPartyBuyer = isBuyerProfile(matchedProfile);
+
+  // Dynamic values based on role and matched profile
+  const partnerName = isMatchedPartyBuyer
+    ? (matchedProfile as BuyerProfile).companyName
+    : (matchedProfile as SellerProfile).businessName;
+  const partnerLogo = isMatchedPartyBuyer
+    ? (matchedProfile as BuyerProfile).logo
+    : (matchedProfile as SellerProfile).logo;
+  const partnerType = isMatchedPartyBuyer ? "Buyer" : "Seller";
+  const userType = role === "buyer" ? "Buyer" : "Seller";
+  const acquisitionPhrase = role === "buyer" ? "acquisition begins here." : "sale begins here.";
 
   const dealStages: string[] = [
     "Introduction",
@@ -67,32 +89,8 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
     setLoadingAI(true);
     setSummary("Analyzing document...");
 
-    // Simulate API call for AI analysis (replace with actual Gemini API call)
-    // For demonstration, we'll just show a placeholder response after a delay.
     try {
-      // Example of how to call the Gemini API for text generation (if needed for analysis)
-      // const prompt = `Summarize the key financial highlights and risks from the following document: ${financialDoc.name}.`;
-      // const chatHistory = [];
-      // chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-      // const payload = { contents: chatHistory };
-      // const apiKey = ""; // Canvas will provide this in runtime
-      // const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-      //
-      // const response = await fetch(apiUrl, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(payload)
-      // });
-      // const result = await response.json();
-      // if (result.candidates && result.candidates.length > 0 &&
-      //     result.candidates[0].content && result.candidates[0].content.parts &&
-      //     result.candidates[0].content.parts.length > 0) {
-      //   setSummary(result.candidates[0].content.parts[0].text);
-      // } else {
-      //   setSummary('Error: Could not get a summary from the AI. Please try again.');
-      // }
-
-      await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 3000));
       setSummary(`AI Summary of ${financialDoc.name}:
         This document appears to be the Q4 2024 Financial Report for Acme Innovations Group.
         Key Highlights:
@@ -103,7 +101,7 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
         - Increased operating expenses, primarily due to expansion efforts.
         - Dependence on a few large clients (further diversification recommended).
         - Minor fluctuations in quarterly revenue, but overall upward trend.`);
-      setDealStage("Financial Analysis"); // Advance stage after analysis
+      setDealStage("Financial Analysis");
     } catch (error) {
       console.error("AI analysis error:", error);
       setSummary("Failed to analyze document. Please try again.");
@@ -112,16 +110,10 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
     }
   };
 
-  useEffect(() => {
-    console.log(buyer);
-  }, [buyer]);
-
-  interface StageIndicatorProps {
-    stage: string;
-    currentStage: string;
-  }
-
-  const StageIndicator: React.FC<StageIndicatorProps> = ({ stage, currentStage }) => {
+  const StageIndicator: React.FC<{ stage: string; currentStage: string }> = ({
+    stage,
+    currentStage,
+  }) => {
     const stageIndex = dealStages.indexOf(stage);
     const currentIndex = dealStages.indexOf(currentStage);
     const isActive = stageIndex <= currentIndex;
@@ -169,42 +161,26 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
         Back to Dashboard
       </button>
 
-      {buyer && (
+      {matchedProfile && (
         <div className="bg-white rounded-xl shadow-2xl p-8 mb-8">
           <div className="flex items-center mb-6">
             <img
-              src={buyer.logo}
-              alt={buyer.name}
+              src={partnerLogo}
+              alt={partnerName}
               className="w-20 h-20 rounded-full mr-4 border-4 border-purple-400"
             />
             <div>
               <h2 className="text-3xl font-bold text-gray-900">
-                Deal Room: <span className="text-purple-700">{buyer.name}</span>
+                Deal Room: <span className="text-purple-700">{partnerName}</span>
               </h2>
               <p className="text-gray-600 text-lg mt-1">
-                Your journey to a successful acquisition begins here.
+                Your journey to a successful {acquisitionPhrase}
               </p>
             </div>
           </div>
-
-          {/* Deal Stage Progress */}
-          {/* <div className="mb-8 p-4 bg-purple-50 rounded-lg shadow-inner">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
-              Deal Progress: <span className="text-green-600">{dealStage}</span>
-            </h3>
-            <div className="flex flex-wrap items-center justify-between space-y-2 md:space-y-0">
-              {dealStages.map(stage => (
-                <StageIndicator key={stage} stage={stage} currentStage={dealStage} />
-              ))}
-            </div>
-          </div> */}
-
           <div className="bg-purple-50 rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Deal Progress</h2>
-
-            {/* Container for the timeline. On small screens, it's a vertical flexbox. On medium, it becomes horizontal. */}
             <div className="flex flex-col md:flex-row md:items-center relative">
-              {/* Horizontal progress line for desktop views */}
               <div className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gray-200 z-0">
                 <div
                   className="bg-purple-600 h-full transition-all duration-500"
@@ -215,14 +191,11 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                   }}
                 ></div>
               </div>
-
               {steps.map((step, index) => (
                 <div
                   key={step.id}
-                  // Each step is a flex container. On mobile, it's a row. On desktop, it's a column.
                   className="flex items-center md:flex-col md:flex-1 md:p-2 z-10 relative mb-4 md:mb-0"
                 >
-                  {/* Vertical progress line for mobile */}
                   {index < steps.length - 1 && (
                     <div
                       className={`md:hidden absolute left-4 top-8 w-0.5 h-full ${
@@ -230,9 +203,7 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                       }`}
                     ></div>
                   )}
-
                   <div className="flex items-center z-10">
-                    {/* Step circle */}
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm md:text-base
                     ${
@@ -245,7 +216,6 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                     >
                       {step.id}
                     </div>
-                    {/* Step label */}
                     <span
                       className={`text-sm md:text-sm ml-3 md:ml-0 md:mt-2 transition-colors text-left
                     ${step.isActive ? "text-primary font-semibold" : "text-gray-500"}`}
@@ -257,8 +227,6 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
               ))}
             </div>
           </div>
-
-          {/* Tabs Navigation */}
           <div className="border-b border-gray-200 mb-6">
             <nav className="-mb-px flex space-x-8">
               <button
@@ -313,25 +281,23 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
               </button>
             </nav>
           </div>
-
-          {/* Tab Content */}
           <div>
             {activeTab === "overview" && (
               <div className="p-4 bg-gray-50 rounded-lg shadow-inner">
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">Deal Overview</h3>
                 <p className="text-gray-700 mb-4">
                   This section provides a high-level summary of the matched deal, including key
-                  terms and a timeline of interactions. Use the tabs above to navigate through
-                  different aspects of the acquisition process.
+                  terms and a timeline of interactions.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <p>
-                      <span className="font-semibold">Buyer:</span> {buyer.name}
+                      <span className="font-semibold">Buyer:</span>{" "}
+                      {role === "buyer" ? "[Your Business Name]" : partnerName}
                     </p>
                     <p>
-                      <span className="font-semibold">Seller:</span> [Your Business
-                      Name/Placeholder]
+                      <span className="font-semibold">Seller:</span>{" "}
+                      {role === "seller" ? "[Your Business Name]" : partnerName}
                     </p>
                     <p>
                       <span className="font-semibold">Match Date:</span> July 15, 2024
@@ -351,11 +317,9 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                   <li>Initial Introduction and Interest (July 15, 2024)</li>
                   <li>NDA Drafted (Expected: July 20, 2024)</li>
                   <li>Due Diligence Period (Expected: August 2024)</li>
-                  {/* Add more dynamic milestones */}
                 </ul>
               </div>
             )}
-
             {activeTab === "documents" && (
               <div className="p-4 bg-gray-50 rounded-lg shadow-inner">
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">Document Exchange 📂</h3>
@@ -364,7 +328,6 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                   control ensures everyone is working with the latest files. All documents are
                   encrypted and accessible only by matched parties.
                 </p>
-
                 <div className="mb-6">
                   <h4 className="text-xl font-bold text-gray-800 mb-3">Upload Documents</h4>
                   <input
@@ -380,7 +343,6 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                     Max file size: 25MB. Supported formats: PDF, DOCX, XLSX.
                   </p>
                 </div>
-
                 <h4 className="text-xl font-bold text-gray-800 mb-3">Shared Documents</h4>
                 <ul className="space-y-3">
                   <li className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between">
@@ -416,18 +378,13 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                 </p>
               </div>
             )}
-
             {activeTab === "messages" && (
               <div className="p-4 bg-gray-50 rounded-lg shadow-inner">
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">Deal Messages 💬</h3>
                 <p className="text-gray-700 mb-4">
-                  Communicate directly and securely with {buyer.name} here. All conversations are
-                  archived and can be referenced at any time, ensuring clear communication
-                  throughout the process.
+                  Communicate directly and securely with {partnerName} here.
                 </p>
-
                 <div className="bg-white h-96 overflow-y-auto p-4 rounded-lg shadow-md mb-4 flex flex-col-reverse">
-                  {/* Message bubbles (reversed for chat-like experience) */}
                   <div className="flex justify-end mb-2">
                     <div className="bg-purple-100 text-purple-800 p-3 rounded-lg max-w-xs shadow-sm">
                       <p>
@@ -446,20 +403,11 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                         initial thoughts?
                       </p>
                       <span className="text-xs text-gray-500 text-left block mt-1">
-                        {buyer.name} - 10:05 AM
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex justify-end mb-2">
-                    <div className="bg-purple-100 text-purple-800 p-3 rounded-lg max-w-xs shadow-sm">
-                      <p>Could you send over your latest financial statements and a pitch deck?</p>
-                      <span className="text-xs text-gray-500 text-right block mt-1">
-                        You - 10:10 AM
+                        {partnerName} - 10:05 AM
                       </span>
                     </div>
                   </div>
                 </div>
-
                 <div className="flex">
                   <input
                     type="text"
@@ -472,7 +420,6 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                 </div>
               </div>
             )}
-
             {activeTab === "financial-ai" && (
               <div className="p-4 bg-gray-50 rounded-lg shadow-inner">
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">
@@ -483,7 +430,6 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                   will quickly analyze and summarize key insights, risks, and opportunities, saving
                   you hours of manual review. This accelerates your due diligence process.
                 </p>
-
                 <div className="mb-6 p-4 border border-purple-200 rounded-lg bg-white shadow-sm">
                   <h4 className="text-xl font-bold text-gray-800 mb-3">
                     Upload Document for Analysis
@@ -511,7 +457,6 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                     {loadingAI ? "Analyzing..." : "Analyze Document"}
                   </button>
                 </div>
-
                 {summary && (
                   <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-indigo-400 mt-6">
                     <h4 className="text-xl font-bold text-gray-800 mb-3 flex items-center">
@@ -524,28 +469,31 @@ const DealRoom: React.FC<DealRoomProps> = ({ buyer, onBackToDashboard }) => {
                 )}
               </div>
             )}
-
             {activeTab === "offers" && (
               <div className="p-4 bg-gray-50 rounded-lg shadow-inner">
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">
                   Offers & Letter of Intent (LOI) ✍️
                 </h3>
                 <p className="text-gray-700 mb-4">
-                  Manage and track all offers and the Letter of Intent. Our platform provides
-                  standardized templates and a clear workflow for reviewing, counter-offering, and
-                  accepting terms, minimizing legal back-and-forth.
+                  {role === "buyer"
+                    ? "Manage and track all offers and the Letter of Intent to acquire this business."
+                    : `Review and manage all offers received from ${partnerName} for your business.`}
                 </p>
-
                 <div className="mb-6 p-4 border border-blue-200 rounded-lg bg-white shadow-sm">
-                  <h4 className="text-xl font-bold text-gray-800 mb-3">Create New Offer</h4>
+                  <h4 className="text-xl font-bold text-gray-800 mb-3">
+                    {role === "buyer" ? "Create New Offer" : "Offer from Buyer"}
+                  </h4>
                   <p className="text-gray-600 mb-3">
-                    Use our guided process to draft a comprehensive offer or LOI.
+                    {role === "buyer"
+                      ? "Use our guided process to draft a comprehensive offer or LOI."
+                      : "Review the latest offer from the buyer here."}
                   </p>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
-                    Start New Offer Draft
-                  </button>
+                  {role === "buyer" && (
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                      Start New Offer Draft
+                    </button>
+                  )}
                 </div>
-
                 <h4 className="text-xl font-bold text-gray-800 mb-3">Offer History</h4>
                 <ul className="space-y-3">
                   <li className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between">

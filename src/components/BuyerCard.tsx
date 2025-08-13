@@ -1,4 +1,4 @@
-import type { BuyerProfile } from "../constants/interfaceItems";
+import type { BuyerProfile } from "../components/BuyerProfileCard";
 
 // Define BuyerCard Props Interface
 interface BuyerCardProps {
@@ -11,21 +11,23 @@ interface BuyerCardProps {
 // Buyer Card for Seller's View
 const BuyerCard: React.FC<BuyerCardProps> = ({ buyer, onAccept, onReject, onViewProfile }) => (
   <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
-    <img
+    {/* <img
       src={buyer.logo}
-      alt={buyer.name}
+      alt={buyer.industry}
       className="w-16 h-16 rounded-full mb-4 object-cover border-2 border-purple-300"
-    />
-    <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">{buyer.name}</h3>
-    <p className="text-purple-600 text-sm font-semibold mb-3 text-center">{buyer.headline}</p>
+    /> */}
+    <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">{buyer.companyName}</h3>
+    <p className="text-purple-600 text-sm font-semibold mb-3 text-center">
+      {buyer.investmentThesis}
+    </p>
     <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 w-full mb-4">
       <div className="flex items-center">
         <span className="mr-2 text-purple-500">📍</span>
-        {buyer.location}
+        {buyer.locationPreference}
       </div>
       <div className="flex items-center">
         <span className="mr-2 text-purple-500">💼</span>
-        {buyer.industryFocus}
+        {buyer.industry}
       </div>
       <div className="flex items-center">
         <span className="mr-2 text-purple-500">💰</span>
@@ -33,13 +35,13 @@ const BuyerCard: React.FC<BuyerCardProps> = ({ buyer, onAccept, onReject, onView
       </div>
       <div className="flex items-center">
         <span className="mr-2 text-purple-500">📈</span>
-        {buyer.revenueRange}
+        {buyer.revenueTarget}
       </div>
     </div>
     <div className="flex space-x-4 mt-auto">
       <button
         className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full shadow-md transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-200"
-        onClick={() => console.log(`Rejected ${buyer.name}`)} // Replaced alert
+        onClick={() => console.log(`Rejected ${buyer.industry}`)} // Replaced alert
         aria-label="Reject"
       >
         <svg
@@ -59,7 +61,7 @@ const BuyerCard: React.FC<BuyerCardProps> = ({ buyer, onAccept, onReject, onView
       </button>
       <button
         className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-md transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-green-200"
-        onClick={() => console.log(`Accepted ${buyer.name}`)} // Replaced alert
+        onClick={() => console.log(`Accepted ${buyer.industry}`)} // Replaced alert
         aria-label="Accept"
       >
         <svg

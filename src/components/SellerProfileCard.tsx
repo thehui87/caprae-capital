@@ -5,6 +5,7 @@ import React from "react";
 export interface SellerProfile {
   id: string;
   businessName: string;
+  logo: string;
   industry: string;
   annualRevenue: string;
   employees: number;

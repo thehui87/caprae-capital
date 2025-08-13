@@ -5,6 +5,7 @@ import React from "react";
 export interface BuyerProfile {
   id: string;
   companyName: string;
+  logo: string;
   acquisitionBudget: string;
   revenueTarget: string;
   industry: string;

@@ -3,7 +3,7 @@ import React from "react";
 
 const Insights = () => {
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-gray-50 min-h-[calc(100ch-168px)]">
       <h1 className="text-4xl font-bold text-primary mb-8">Insights</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {/* Card 1: Line Chart */}
