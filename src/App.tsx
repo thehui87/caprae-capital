@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "./redux/store";
 import { initialBuyers } from "./pages/BuyerProfilesDashboard";
 import { initialSellers } from "./pages/SellerProfileDashboard";
-
+import type { SellerProfile } from "./components/SellerProfileCard";
 import { NavbarProvider } from "./context/navbarContext";
 // Lazy imports
 const Home = lazy(() => import("./pages/Home"));
@@ -45,11 +45,17 @@ function Loader() {
 export default function App() {
   const isLoggedIn = useSelector((state: RootState) => state.auth.loggedIn);
   // const { onboardingType, matchedBuyer } = useSelector((state: RootState) => state.buyer);
-
+  const [sellers, setSellers] = useState<SellerProfile[]>(initialSellers);
+  const [selectedSeller, setSelectedSeller] = useState<SellerProfile | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [onboarded, setOnboarded] = useState(false);
   const [selectedSidebarItem, setSelectedSidebarItem] = useState("Dashboard");
   const navigate = useNavigate();
+
+  const handleViewDetails = (id: string) => {
+    const seller = sellers.find(s => s.id === id);
+    setSelectedSeller(seller || null);
+  };
 
   useEffect(() => {
     // Load saved role & onboarding state
@@ -152,7 +158,7 @@ export default function App() {
                       <DashboardBuyer
                         onAccept={() => {}}
                         onReject={() => {}}
-                        onViewProfile={() => {}}
+                        onViewProfile={() => handleViewDetails}
                         showProfileModal={false}
                         selectedSeller={initialSellers[0]} // Changed from selectedSeller
                         setShowProfileModal={() => {}}

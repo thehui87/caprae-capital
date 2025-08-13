@@ -48,7 +48,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller, onAccept, onReject, onV
     {/* Action Buttons (Reject and Accept) */}
     <div className="flex space-x-4 mt-auto w-full justify-center">
       <button
-        className="bg-danger hover:bg-red-600 text-white p-3 rounded-full shadow-md transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-200"
+        className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full shadow-md transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-200"
         onClick={() => onReject(seller.id)} // Pass seller.id to the parent's reject handler
         aria-label="Reject Seller Profile"
       >
@@ -68,7 +68,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller, onAccept, onReject, onV
         </svg>
       </button>
       <button
-        className="bg-success hover:bg-green-600 text-white p-3 rounded-full shadow-md transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-green-200"
+        className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-md transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-green-200"
         onClick={() => onAccept(seller.id)} // Pass seller.id to the parent's accept handler
         aria-label="Accept Seller Profile"
       >

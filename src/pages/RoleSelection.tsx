@@ -35,7 +35,7 @@ export default function RoleSelectionPage({
       <div className="min-h-[calc(100vh-168px)] bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-500 ease-in-out scale-100 opacity-100">
           <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-            Welcome to Capre Capital! 👋
+            Welcome to Caprae Capital! 👋
           </h2>
           <p className="text-center text-gray-600 mb-8">
             Let's get you set up. Will you be buying or selling a business today?
