@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+:root {
+  --mint: 168 230 207; /* R G B values */
+  --beige: 245 230 204;
+  --navy: 26 43 75;
+}
+body {
+  font-family: system-ui, sans-serif;
+  background-color: "bg-amber-100";
+  color: "text-teal-900";
+}
